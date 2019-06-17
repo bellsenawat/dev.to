@@ -1,5 +1,6 @@
 function initScrolling() {
   checkIfNearBottomOfPage();
+  initialLoadMoreArticles();
 }
 
 function checkIfNearBottomOfPage() {
@@ -11,10 +12,10 @@ function checkIfNearBottomOfPage() {
 
     initScrolling.called = true;
     if (document.getElementsByClassName("single-article").length < 2 || location.search.indexOf("q=") > -1 ) {
-      document.getElementById("loading-articles").style.display = "none"
+      document.getElementById("bm-loadmore-articles").style.display = "none"
       done = true;
     } else {
-      document.getElementById("loading-articles").style.display = "block"
+      document.getElementById("bm-loadmore-articles").style.display = "block"
     }
     fetchNextPageIfNearBottom();
     setInterval(function(){
@@ -37,7 +38,7 @@ function fetchNextPageIfNearBottom() {
     } else if (indexWhich == "videos") {
       fetchNextVideoPage(el)
     } else {
-      algoliaPaginate(el.dataset.algoliaTag);
+      // algoliaPaginate(el.dataset.algoliaTag);  #remove this action for auto fetch when Page near bottom
     }
   }
 }
@@ -155,15 +156,19 @@ function insertArticles(articles) {
   }
 }
 
+
 function algoliaPaginate(tag){
   var filters = [];
+  var el = document.getElementById("index-container");
+  var algoliaPage = parseInt(el.dataset.algoliaPage)
+  
   if (tag && tag.length > 0) {
     filters.push(tag);
   }
-
+  
   var searchObj = {
       hitsPerPage: 15,
-      page: nextPage,
+      page: algoliaPage,
       attributesToHighlight: [],
       tagFilters: filters,
   }
@@ -177,14 +182,25 @@ function algoliaPaginate(tag){
     searchObj["filters"] = ('published_at_int > ' + homeEl.dataset.articlesSince);
     paginationArticlesIndex = client.initIndex('ordered_articles_by_positive_reactions_count_<%= Rails.env %>');
   }
-
+  
   paginationArticlesIndex.search("*", searchObj)
   .then(function searchDone(content) {
-    nextPage += 1;
+    var nextPage = parseInt(algoliaPage += 1);
+    el.dataset.algoliaPage = nextPage;
     insertArticles(content.hits);
     if (content.hits.length == 0) {
-      document.getElementById("loading-articles").style.display = "none"
+      document.getElementById("bm-loadmore-articles").style.display = "none"
       done = true;
     }
   });
+}
+
+function initialLoadMoreArticles() {
+  var el = document.getElementById("index-container");
+  var tag = el.dataset.algoliaTag
+  document.getElementById("bm-loadmore-articles")
+          .addEventListener("click", function (event) {
+            event.preventDefault();
+            algoliaPaginate(tag);
+          });
 }

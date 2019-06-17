@@ -29,6 +29,7 @@
   <div class="home" id="index-container"
       data-params="<%= params.to_json(only: %i[tag username q]) %>" data-which="<%= @list_of %>"
       data-algolia-tag=""
+      data-algolia-page="1"
       data-feed="<%= params[:timeframe] || "base-feed" %>"
       data-articles-since="<%= Timeframer.new(params[:timeframe]).datetime.to_i %>">
 
@@ -153,8 +154,11 @@
         <% end %>
       </div>
 
-      <div class="loading-articles" id="loading-articles">
+      <!-- <div class="loading-articles" id="loading-articles">
         loading...
+      </div> -->
+      <div class="cta bm-loadmore-articles" id="bm-loadmore-articles">
+        LOAD MORE
       </div>
     </div>
 

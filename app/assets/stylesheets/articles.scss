@@ -1589,6 +1589,17 @@
     opacity: 0.7;
     display: none;
   }
+  .bm-loadmore-articles {
+    width: 150px;
+    max-width: 100%;
+    padding: 14px 0px;
+    margin: 0 auto;
+    margin-top: 20px;
+    font-size: 0.98em;
+    border: 1px solid rgb(222, 230, 233);
+    border-radius: 3px;
+    cursor: pointer;
+  }
 }
 
 @keyframes fade-in {
